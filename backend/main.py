@@ -3,6 +3,8 @@ from sqlalchemy.orm import Session
 from schemas import CommentCreate, CommentRead
 from models import Comments, Base
 from database import engine, session_local
+from pathlib import Path
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 Base.metadata.create_all(bind=engine)
@@ -34,7 +36,9 @@ async def delete_comment(comment_id: int, db: Session=Depends(get_db)) -> None:
     db.delete(comment)
     db.commit()
     
-
+dist_dir = Path(__file__).parent.parent / "dist"
+if dist_dir.is_dir():
+    app.mount("/", StaticFiles(directory=dist_dir, html=True), name="static")
 
 
 
